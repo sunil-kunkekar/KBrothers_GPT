@@ -1,0 +1,72 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+*.sqlite3
+db.sqlite3
+*.log
+*.pot
+*.pyc
+
+# Django media/static files
+/media/
+staticfiles/
+static/
+*.static
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Channels (Daphne or other socket servers)
+*.sock
+
+# Environment
+.env
+.env.*
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node (if using WebSocket with frontend or assets)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Coverage/testing
+htmlcov/
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+coverage.xml
+
+# Docker
+*.pid
+*.bak
+*.tar
+*.gz
+Dockerfile
+docker-compose.yml
+__docker*
+
+# Git itself
+*.orig
+
+# Migrations (optional — if auto-generated in each environment)
+**/migrations/*.py
+**/migrations/__pycache__/
+
+# Backup files
+*.bak
+*.tmp

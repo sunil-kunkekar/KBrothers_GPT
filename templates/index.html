@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>KBrothers-GPT</title>
+        <style>
+            :root {
+                --primary-color: #2563eb;
+                --primary-hover: #1d4ed8;
+                --sidebar-bg: #1e1e2f;
+                --main-bg: #f8fafc;
+                --text-color: #1e293b;
+                --text-light: #64748b;
+                --white: #ffffff;
+                --border-radius: 8px;
+                --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: var(--text-color);
+                background-color: var(--main-bg);
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .container {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+            }
+
+            .sidebar {
+                width: 280px;
+                background-color: var(--sidebar-bg);
+                color: var(--white);
+                padding: 20px;
+                overflow-y: auto;
+                transition: transform 0.3s ease;
+                z-index: 10;
+            }
+
+            .sidebar-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar h3 {
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+
+            .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .sidebar ul li {
+                margin-bottom: 12px;
+                font-size: 14px;
+                word-wrap: break-word;
+                padding: 10px;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .sidebar ul li:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar ul li.empty {
+                color: var(--text-light);
+                font-style: italic;
+                cursor: default;
+            }
+
+            .sidebar ul li.empty:hover {
+                background-color: transparent;
+            }
+
+            .main {
+                flex-grow: 1;
+                padding: 30px;
+                background-color: var(--main-bg);
+                overflow-y: auto;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                color: var(--success-color);
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+                color: var(--text-color);
+            }
+
+            .chat-form {
+                margin-bottom: 30px;
+            }
+
+            textarea {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: var(--border-radius);
+                resize: none;
+                min-height: 120px;
+                margin-bottom: 15px;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+            textarea:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+            button {
+                padding: 12px 24px;
+                font-size: 16px;
+                font-weight: 500;
+                background-color: var(--primary-color);
+                color: var(--white);
+                border: none;
+                cursor: pointer;
+                border-radius: var(--border-radius);
+                transition: background-color 0.2s, transform 0.1s;
+            }
+
+            button:hover {
+                background-color: var(--primary-hover);
+            }
+
+            button:active {
+                transform: scale(0.98);
+            }
+
+            .result {
+                margin-top: 30px;
+                background-color: var(--white);
+                padding: 25px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+                white-space: pre-wrap;
+                line-height: 1.6;
+            }
+
+            .result h3 {
+                color: var(--primary-color);
+                margin-bottom: 15px;
+                font-size: 1.3rem;
+            }
+
+            .result pre {
+                font-family: inherit;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-size: 16px;
+                line-height: 1.6;
+            }
+
+            .mobile-menu-btn {
+                display: none;
+                background: none;
+                border: none;
+                color: var(--primary-color);
+                font-size: 24px;
+                cursor: pointer;
+                padding: 10px;
+            }
+
+            .footer {
+                text-align: center;
+                padding: 15px;
+                background-color: var(--white);
+                color: var(--text-light);
+                font-size: 14px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            /* Responsive styles */
+            @media (max-width: 768px) {
+                .container {
+                    flex-direction: column;
+                }
+
+                .sidebar {
+                    width: 100%;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    height: 100vh;
+                    transform: translateX(-100%);
+                }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+                .main {
+                    padding: 20px;
+                    margin-top: 60px;
+                }
+
+                .mobile-menu-btn {
+                    display: block;
+                }
+
+                .header {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    background-color: var(--white);
+                    padding: 15px 20px;
+                    z-index: 5;
+                    box-shadow: var(--box-shadow);
+                }
+
+                h1 {
+                    font-size: 1.5rem;
+                    margin-bottom: 0;
+                }
+            }
+
+            /* Loading animation */
+            .loading {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(255,255,255,.3);
+                border-radius: 50%;
+                border-top-color: var(--white);
+                animation: spin 1s ease-in-out infinite;
+                margin-left: 10px;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+
+            /* Markdown-like styling */
+            .result strong {
+                font-weight: 600;
+            }
+
+            .result em {
+                font-style: italic;
+            }
+
+            .result code {
+                font-family: 'Courier New', Courier, monospace;
+                background-color: #f1f5f9;
+                padding: 2px 4px;
+                border-radius: 4px;
+                font-size: 0.9em;
+            }
+
+            .result pre code {
+                display: block;
+                padding: 15px;
+                overflow-x: auto;
+                background-color: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+            }
+
+            .result ul, .result ol {
+                padding-left: 20px;
+                margin: 10px 0;
+            }
+
+            .result li {
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Chat History</h3>
+                </div>
+                <ul>
+                    {% for item in history %}
+                        <li>{{ item }}</li>
+                    {% empty %}
+                        <li class="empty">No history yet</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="main">
+                <div class="header">
+                    <button class="mobile-menu-btn" id="menuBtn">☰</button>
+                    <h1>KBrothers-GPT</h1>
+                </div>
+
+                <form method="post" class="chat-form">
+                    {% csrf_token %}
+                    <h2>Ask a Question</h2>
+                    <textarea name="prompt" rows="5" placeholder="Type your question here..."></textarea><br>
+                    <button type="submit" id="submitBtn">Get Answer</button>
+                </form>
+
+                {% if result %}
+                <div class="result">
+                    <h3>Answer:</h3>
+                    <pre>{{ result }}</pre>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by KBrothers AI &copy; {% now "Y" %}
+        </div>
+
+        <script>
+            // Mobile menu toggle
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Form submission loading state
+            const form = document.querySelector('.chat-form');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (form) {
+                form.addEventListener('submit', () => {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Processing <span class="loading"></span>';
+                });
+            }
+
+            // Auto-resize textarea
+            const textarea = document.querySelector('textarea');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+
+            // Click on history items to populate the textarea
+            const historyItems = document.querySelectorAll('.sidebar ul li:not(.empty)');
+            historyItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (textarea) {
+                        textarea.value = item.textContent;
+                        textarea.focus();
+                        // Trigger the input event to resize if needed
+                        const event = new Event('input');
+                        textarea.dispatchEvent(event);
+                    }
+                    
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
