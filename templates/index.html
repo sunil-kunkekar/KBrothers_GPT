@@ -321,12 +321,23 @@
                     <h1>KBrothers-GPT</h1>
                 </div>
 
-                <form method="post" class="chat-form">
+                <form method="post">
                     {% csrf_token %}
-                    <h2>Ask a Question</h2>
-                    <textarea name="prompt" rows="5" placeholder="Type your question here..."></textarea><br>
-                    <button type="submit" id="submitBtn">Get Answer</button>
+                    <div class="form-group">
+                        <label for="prompt">Ask a Question:</label>
+                        <textarea name="prompt" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="prompt_type">Choose Prompt Type:</label>
+                        <select name="prompt_type" class="form-control">
+                            <option value="qa" {% if selected_prompt_type == 'qa' %}selected{% endif %}>Q&A</option>
+                            <option value="summarize" {% if selected_prompt_type == 'summarize' %}selected{% endif %}>Summarize</option>
+                            <option value="explain_code" {% if selected_prompt_type == 'explain_code' %}selected{% endif %}>Explain Code</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
+
 
                 {% if result %}
                 <div class="result">
